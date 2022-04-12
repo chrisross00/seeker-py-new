@@ -1,5 +1,5 @@
 {
-    "searches": [{
+    "searches": [[{
             "query": "olivia",
             "search_results": [{
                 "result_id": "u0wzyl",
@@ -35,6 +35,6 @@
                     "hash": "c46e932a561f99d41129267fcd5ba7f5534a61846f7265dd967106ee44e721a3"
                 }
             }]
-        }
+        }]
     ]
 }
