@@ -1,0 +1,11 @@
+{   
+    "config": 
+        {
+            "json_path":"config.json"
+        },
+    "database":
+        {
+            "open_path": "dbdict.json",
+            "save_path":"dbdict.json"
+        }
+}
