@@ -6,6 +6,6 @@
     "database":
         {
             "open_path": "dbdict.json",
-            "save_path":"dbdict.json"
+            "save_path":"dbdict2.json"
         }
 }
