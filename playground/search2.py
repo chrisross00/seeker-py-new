@@ -9,7 +9,7 @@ from datetime import datetime
 # Evaluate uniqueness (and store)
 # Display new results
 
-class SearchResult:
+class SearchResult_OG:
     def __init__(self, search, query):
         self.search = search
         self.query = query
@@ -55,7 +55,7 @@ def pure_search(search_queries, subreddit, limit):
     search_results = [] #holder for final storage; kept searches only
     for query in search_queries: #work through the list of queries
         new_search = subreddit.search(query, sort="new", limit=limit)
-        sr = SearchResult(new_search, query)
+        sr = SearchResult_OG(new_search, query)
         # sr.build_unique_result('test')
         search_results.append(sr)
     return search_results
