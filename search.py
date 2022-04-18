@@ -15,6 +15,7 @@ class SearchResult:
         self.query = query
         self.search_result = []
         self.unique_result = []
+        self.has_unique_result = False
         
         raw_results = []
         for result in self.search:
@@ -47,9 +48,11 @@ class SearchResult:
         for result in self.search_result['search_results']:
             if result['result_id'] in result_ids:
                 unique_results.append(result)
-            else:
-                print('nada', result['result_id'])
-        self.unique_result['search_results'] = unique_results
+        if unique_results:
+            self.unique_result['search_results'] = unique_results
+            self.has_unique_result = True
+        else:
+            return
         
 def pure_search(search_queries, subreddit, limit):
     search_results = [] #holder for final storage; kept searches only
@@ -79,9 +82,10 @@ def generate_results(search_result, result_ids):
     updated_search = utils.open_db(utils.prop('database.open_path'))
     for i in range(len(search_result)):
         search_result[i].get_unique_result(result_ids)
-        if search_result[i].unique_result:
+        if search_result[i].has_unique_result:
             unique_results.append(search_result[i].unique_result)
-    
-    updated_search['searches'].append(unique_results)
-
-    return updated_search
+        else:  
+            pass
+    if unique_results:
+        updated_search['searches'].append(unique_results)
+        return updated_search

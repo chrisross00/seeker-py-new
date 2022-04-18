@@ -5,6 +5,7 @@ from turtle import update
 import pandas as pd
 from search import eval_refactor, pure_search, generate_results
 import utils
+import pprint
 from time import process_time
 import itertools
 
@@ -15,22 +16,17 @@ reddit = utils.get_auth_instance()
 # Search setup
 subreddit = reddit.subreddit("mechmarket") #set the subreddit object
 search_queries = ["jelly","olivia","yugo"] #list of the queries to search for (move to config.json)
-limit = 3 #limit for the queries (move to config.json)
+limit = 4 #limit for the queries (move to config.json)
 
 # does searches ever go deeper than [0] ANSWER: no
-search_result = pure_search(search_queries,subreddit,limit)
-print('\nSearch Result objects: ', (search_result))
-print('\nSearch Result object dir(): ', dir(search_result[0]))
-
+search_result = pure_search(search_queries, subreddit, limit)
 result_ids = eval_refactor(search_result)
 finalized_results = generate_results(search_result, result_ids)
+
+if finalized_results:
+    utils.save_db(finalized_results, utils.prop('database.save_path'))
+    
 utils.save_db(finalized_results, utils.prop('database.save_path'))
-
-
-# # print(updated_search)
-# # print(type(updated_search))
-
-# utils.save_db(finalized_results, utils.prop('database.save_path'))
 
 # Timer and teardown
 t1_stop = process_time()
