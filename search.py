@@ -88,4 +88,4 @@ def generate_results(search_result, result_ids):
             pass
     if unique_results:
         updated_search['searches'].append(unique_results)
-        return updated_search
+    return updated_search #should update this to return updated_search and unique_results; one for updating the db, the other for new_result updates/downstream  activity
