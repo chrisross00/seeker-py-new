@@ -5,7 +5,11 @@
         },
     "database":
         {
-            "open_path": "dbdict_new.json",
-            "save_path": "dbdict_new.json"
+            "open_path": "dbdict.json",
+            "save_path": "dbdict_new2.json"
+        },
+    "twilio":
+        {
+            "twilio_number": ""
         }
 }

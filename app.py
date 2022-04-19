@@ -8,10 +8,12 @@ import utils
 import pprint
 from time import process_time
 import itertools
+from messenger import parse_results, Message
 
 t1_start = process_time()
 utils.initialize_props()
 reddit = utils.get_auth_instance()
+# twilio = utils.get_twilio_instance() # maybe make get_auth_instance a factory?
 
 # Search setup
 subreddit = reddit.subreddit("mechmarket") #set the subreddit object
@@ -21,12 +23,19 @@ limit = 4 #limit for the queries (move to config.json)
 # does searches ever go deeper than [0] ANSWER: no
 search_result = pure_search(search_queries, subreddit, limit)
 result_ids = eval_refactor(search_result)
-finalized_results = generate_results(search_result, result_ids)
+final_results = generate_results(search_result, result_ids, 'new')
 
-if finalized_results:
-    utils.save_db(finalized_results, utils.prop('database.save_path'))
+# Twilio stuff
+message_parts_list = parse_results(final_results)
+m = Message(utils.get_twilio_instance())
+message_list = m.build_message(message_parts_list)
+m.send_message(message_list)
+
+# commenting saving logic while adding in Twilio stuff
+# if final_results:
+#     utils.save_db(final_results, utils.prop('database.save_path'))
     
-utils.save_db(finalized_results, utils.prop('database.save_path'))
+# utils.save_db(final_results, utils.prop('database.save_path'))
 
 # Timer and teardown
 t1_stop = process_time()

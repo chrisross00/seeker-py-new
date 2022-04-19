@@ -25,7 +25,8 @@ class SearchResult:
                     'body':  {
                         'author': result.author.name,
                         'title': str(result.title),
-                        'created date': datetime.fromtimestamp(result.created_utc).strftime('%Y-%m-%d %H:%M:%S'),
+                        'created_date_local': datetime.fromtimestamp(result.created_utc).strftime('%Y-%m-%d %H:%M:%S'),
+                        'created_date_utc': result.created_utc,
                         'url': result.url
                     }
                 }
@@ -77,7 +78,7 @@ def eval_refactor(search_result): #Given a list of searches, return the ids of r
                 results.append(result['result_id'])
     return results
 
-def generate_results(search_result, result_ids):
+def generate_results(search_result, result_ids, mode):
     unique_results = []
     updated_search = utils.open_db(utils.prop('database.open_path'))
     for i in range(len(search_result)):
@@ -88,4 +89,9 @@ def generate_results(search_result, result_ids):
             pass
     if unique_results:
         updated_search['searches'].append(unique_results)
-    return updated_search #should update this to return updated_search and unique_results; one for updating the db, the other for new_result updates/downstream  activity
+    
+    if mode == 'all':
+        utils.save_db(updated_search, utils.prop('database.save_path'))
+        return updated_search 
+    elif mode == 'new':
+        return unique_results

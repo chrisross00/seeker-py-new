@@ -24,7 +24,7 @@ class SearchResult_OG:
                     'body':  {
                         'author': result.author.name,
                         'title': str(result.title),
-                        'created date': datetime.fromtimestamp(result.created_utc).strftime('%Y-%m-%d %H:%M:%S'),
+                        'created_date': datetime.fromtimestamp(result.created_utc).strftime('%Y-%m-%d %H:%M:%S'),
                         'url': result.url
                     }
                 }
