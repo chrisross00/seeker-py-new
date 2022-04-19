@@ -1,3 +1,4 @@
+from time import time
 import utils
 import twilio
 from dateutil import parser 
@@ -26,9 +27,29 @@ class Twilio:
             #build body with message_parts_list
             for i in range(len(message_parts_list)):
                 # day in s = 86400
-                days_ago = message_parts_list[i]['datediff_total_seconds']/86400
-                days_around_round = round(days_ago)
-                message = 'New post found with title: "' + str(message_parts_list[i]['title']) + '".\nThis was posted about ' + str(days_around_round) + ' days ago.\n\nUrl: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
+                s_ago = message_parts_list[i]['datediff_total_seconds']
+
+                if s_ago < 86400:
+                    if s_ago > 5400: #if greater than 1.5h ago, but less than a day, put it in hours
+                        t = round(s_ago/3600)
+                        t = str(t)
+                        time_ago = t + ' hours ago'
+                    elif 120 <= s_ago <= 5400: #if less than 1.5h ago, put it in minutes
+                        t = round(s_ago/60)
+                        t = str(t)
+                        time_ago = t +' minutes ago' 
+                    elif 60 <= s_ago < 120:
+                        time_ago = 'about a minute ago'
+                    elif s_ago < 60:
+                        t = round(s_ago)
+                        t = str(t)
+                        time_ago = t + ' seconds ago'
+                else:
+                    t = round(s_ago/86400)
+                    t = str(t)
+                    time_ago = t + ' days ago'
+                
+                message = '\n\nNew post found\n\nTitle: "' + str(message_parts_list[i]['title']) + '".\n\nPosted ' + time_ago + '\n\nURL: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
                 body_list.append(message)
 
             return body_list
@@ -54,3 +75,17 @@ class Twilio:
                             'id': final_results[i]['search_results'][0]['result_id']
                         })
             return message_parts_list
+
+        
+
+        # def build_message(self, message_parts_list):
+        #     body_list = []
+        #     #build body with message_parts_list
+        #     for i in range(len(message_parts_list)):
+        #         # day in s = 86400
+        #         days_ago = message_parts_list[i]['datediff_total_seconds']/86400
+        #         days_around_round = round(days_ago)
+        #         message = '\n\nNew post found\n\nTitle: "' + str(message_parts_list[i]['title']) + '".\n\nPosted about ' + str(days_around_round) + ' days ago\n\nURL: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
+        #         body_list.append(message)
+
+        #     return body_list
