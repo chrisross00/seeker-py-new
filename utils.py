@@ -30,17 +30,11 @@ def get_auth_instance():
     )
     return reddit
 
-def get_twilio_instance():
+def get_twilio_instance_parameters():
     auth_config = {
     **dotenv_values('.env') #load environment variables
     }
-    twilio = Client(auth_config["TWILIO_ACCOUNT_SID"], auth_config["TWILIO_AUTH_TOKEN"])
-    from_number = auth_config["TWILIO_FROM_PHONE_NUMBER"]
-    to_number = auth_config["TWILIO_TO_PHONE_NUMBER"]
-    instance = [twilio, from_number, to_number]
-    # verify.verifications.create(to=auth_config["TWILIO_PHONE_NUMBER"], channel='sms')
-    
-    return instance
+    return auth_config
 
 def open_db(filepath):
     with open(filepath) as f: #load it to f

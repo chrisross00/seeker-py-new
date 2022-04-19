@@ -7,13 +7,11 @@ from datetime import datetime
 # https://www.twilio.com/blog/phone-verification-with-twilio-for-python-developers
 # https://www.twilio.com/docs/sms/api/message-resource
 
-
 class Message:
     def __init__(self, twilio):
-        print(twilio)
-        self.twilio = twilio[0]
-        self.from_phone = twilio[1]
-        self.to_phone = twilio[2]
+        self.twilio = twilio.twilio
+        self.from_number = twilio.from_number
+        self.to_number = twilio.to_number
 
     def build_message(self, message_parts_list):
         body_list = []
@@ -30,20 +28,7 @@ class Message:
     def send_message(self,body):
         #build body with message_parts_list
         for b in body:
-            self.twilio.messages.create(body=b,from_=self.from_phone,to=self.to_phone)
-
-
-
-# Pipeline
-## App gets final-results and updates the json database
-## app uses modules from messenger to:
-    ## pass in final_results and process each result for the parts needed to build a message
-    ## build a message
-    ## 
-    ## send a message for each new result in final_results
-
-
-
+            self.twilio.messages.create(body=b,from_=self.from_number,to=self.to_number)
 
 def parse_results(final_results):
     message_parts_list = []
@@ -61,29 +46,3 @@ def parse_results(final_results):
                     'id': final_results[i]['search_results'][0]['result_id']
                 })
     return message_parts_list
-
-    
-    # final_results[0]['search_results'][0]['body']['title'] 
-    # convert final_results into a list of message bodies or 
-
-
-
-#parser.parse(str(final_results[0]['search_results'][0]['body']['created_date_local']))
-
-
-
-
-
-
-
-
-# def default(results_dict):
-#     print(results_dict)
-#     return
-
-# m = Message(utils.get_twilio_instance()) #get and pass a Twilio auth object to make a new Message class
-# body="This is a test body as a variable"
-# m.send_message(body)
-
-
-# message = m.twilio.messages.create(body="Hi there from Chris's app",from_='+12393269841',to='+16175832854')

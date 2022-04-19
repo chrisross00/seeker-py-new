@@ -1,19 +1,17 @@
 # approach 2 - PRAW
 # https://www.reddit.com/r/GoldTesting/comments/3cm1p8/how_to_make_your_bot_use_oauth2/
 
-from turtle import update
-import pandas as pd
+# import pandas as pd
 from search import eval_refactor, pure_search, generate_results
 import utils
-import pprint
 from time import process_time
-import itertools
 from messenger import parse_results, Message
+from Twilio import Twilio
 
 t1_start = process_time()
 utils.initialize_props()
 reddit = utils.get_auth_instance()
-# twilio = utils.get_twilio_instance() # maybe make get_auth_instance a factory?
+twilio = Twilio()
 
 # Search setup
 subreddit = reddit.subreddit("mechmarket") #set the subreddit object
@@ -26,10 +24,9 @@ result_ids = eval_refactor(search_result)
 final_results = generate_results(search_result, result_ids, 'new')
 
 # Twilio stuff
-message_parts_list = parse_results(final_results)
-m = Message(utils.get_twilio_instance())
-message_list = m.build_message(message_parts_list)
-m.send_message(message_list)
+message_parts_list = twilio.message.parse_results(final_results)
+message_list = twilio.message.build_message(message_parts_list)
+twilio.message.send_message(message_list)
 
 # commenting saving logic while adding in Twilio stuff
 # if final_results:
