@@ -5,7 +5,7 @@
         },
     "database":
         {
-            "open_path": "dbdict.json",
+            "open_path": "dbdict_new2.json",
             "save_path": "dbdict_new2.json"
         },
     "twilio":

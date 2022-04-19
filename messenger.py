@@ -22,7 +22,7 @@ class Message:
             # day in s = 86400
             days_ago = message_parts_list[i]['datediff_total_seconds']/86400
             days_around_round = round(days_ago)
-            message = 'New post found with title: "' + str(message_parts_list[i]['title']) + '".\nThis was posted about ' + str(days_around_round) + ' days ago.\nUrl: ' + message_parts_list[i]['url']
+            message = 'New post found with title: "' + str(message_parts_list[i]['title']) + '".\nThis was posted about ' + str(days_around_round) + ' days ago.\n\nUrl: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
             body_list.append(message)
 
         return body_list
@@ -57,7 +57,8 @@ def parse_results(final_results):
                     'datediff_total_seconds': datediff_obj.total_seconds(),
                     'datediff_days' : datediff_obj.days,
                     'datediff_seconds' : datediff_obj.seconds,
-                    'url': final_results[i]['search_results'][j]['body']['url']
+                    'url': final_results[i]['search_results'][j]['body']['url'],
+                    'id': final_results[i]['search_results'][0]['result_id']
                 })
     return message_parts_list
 
