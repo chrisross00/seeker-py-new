@@ -3,10 +3,15 @@
         {
             "json_path":"config.json"
         },
-    "database":
+    "reddit_db":
         {
-            "open_path": "dbdict_new2.json",
-            "save_path": "dbdict_new2.json"
+            "open_path": "reddit_db.json",
+            "save_path": "reddit_db.json"
+        },
+    "message_db":
+        {
+            "open_path": "message_db.json",
+            "save_path": "message_db.json"
         },
     "twilio":
         {

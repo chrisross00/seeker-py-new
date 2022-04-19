@@ -66,7 +66,7 @@ def pure_search(search_queries, subreddit, limit):
 
 def eval_refactor(search_result): #Given a list of searches, return the ids of results that are new
     t = search_result
-    updated_search = utils.open_db(utils.prop('database.open_path'))
+    updated_search = utils.open_db(utils.prop('reddit_db.open_path'))
     previous_id_list = utils.get_db_ids(updated_search) # get the db ids
 
     results = []
@@ -80,7 +80,7 @@ def eval_refactor(search_result): #Given a list of searches, return the ids of r
 
 def generate_results(search_result, result_ids, mode, save):
     unique_results = []
-    updated_search = utils.open_db(utils.prop('database.open_path'))
+    updated_search = utils.open_db(utils.prop('reddit_db.open_path'))
     for i in range(len(search_result)):
         search_result[i].get_unique_result(result_ids)
         if search_result[i].has_unique_result:
@@ -91,7 +91,7 @@ def generate_results(search_result, result_ids, mode, save):
         updated_search['searches'].append(unique_results)
     
     if save:
-        utils.save_db(updated_search, utils.prop('database.save_path'))
+        utils.save_db(updated_search, utils.prop('reddit_db.save_path'))
     
     if mode == 'all':
         return updated_search 
