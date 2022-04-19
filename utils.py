@@ -95,4 +95,13 @@ def get_db_ids(previous_search):
                 previous_id_list.append(previous_search['searches'][i][j]['search_results'][k]['result_id']) #store the id to the previous_id_list
     
     return previous_id_list
-    
+
+def check_sent_messages(outside_id): #checks if an id exists in the db of sent messages
+    m = open_db(prop('message_db.open_path'))
+    for i in range(len(m['messages'])):
+        for j in range (len(m['messages'][i])):
+            if m['messages'][i][j]['id'] == outside_id:
+                result = {'id': m['messages'][i][j]['id']}
+            else:
+                result = False
+    return result

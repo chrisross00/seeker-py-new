@@ -50,7 +50,7 @@ class Twilio:
                     t = str(t)
                     time_ago = t + ' days ago'
                 
-                message = '\n\nNew post found\n\nTitle: "' + str(message_parts_list[i]['title']) + '".\n\nPosted ' + time_ago + '\n\nURL: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
+                message = '\n\n: \n\nNew post found!\n\nQuery: ' + message_parts_list[i]['query'] + '\n\nTitle: "' + str(message_parts_list[i]['title']) + '".\n\nPosted ' + time_ago + '\n\nURL: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
                 self.message_list.append(message)
 
             return self.message_list
@@ -72,26 +72,14 @@ class Twilio:
                             'datediff_days' : datediff_obj.days,
                             'datediff_seconds' : datediff_obj.seconds,
                             'url': final_results[i]['search_results'][j]['body']['url'],
-                            'id': final_results[i]['search_results'][0]['result_id']
+                            'id': final_results[i]['search_results'][0]['result_id'],
+                            'query': final_results[i]['search_parameters']['query'],
+                            'status':0
                         })
-            return self.message_parts
+            return self.message_parts #could just add the full message as another key in the message_parts object
         
         def store_messages(self):
             messages = utils.open_db(utils.prop('message_db.open_path'))
             messages['messages'].append(self.message_parts)
             utils.save_db(messages, utils.prop('message_db.save_path'))
             return
-
-        def review_ids(self, outside_id):
-            m = utils.open_db(utils.prop('message_db.open_path'))
-            results = []
-            
-            for i in range(len(m['messages'])):
-                for j in range (len(m['messages'][i])):
-                    if m['messages'][i][j]['id'] == outside_id:
-                        results.append({
-                            'id': m['messages'][i][j]['id']
-                        })
-
-            #twilio.message.message_parts[0]['id'] #wherever you do this, this is basically how you get to the ids on the message object once message_parts is set
-            return results

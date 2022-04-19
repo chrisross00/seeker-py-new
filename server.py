@@ -1,11 +1,12 @@
+import requests
+import utils
 from flask import Flask, render_template, request
 from numpy import concatenate
 from pandas import concat
-import requests
+
 from twilio.twiml.messaging_response import MessagingResponse
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
-
 
 # Create a Flask app
 app = Flask(__name__)
@@ -23,15 +24,18 @@ def handle_incoming_msg():
     print(incoming_msg)
 
     # handle response from app server
+    found = utils.check_sent_messages(incoming_msg)
+    if found:
+        final_body = "\n\n: \n\nConsumerBot: I will send a message on Reddit to the author of post ID, " + '"' + found['id'] + '".'
+    else:
+        final_body = '\n\n: \n\nConsumerBot: I did not find any posts matching post ID, ' + '"' + incoming_msg + '".' + ' It might not be saved or it was deleted.'
 
-    # send response to user
     resp = MessagingResponse() 
     msg = resp.message()
-    final_body = "\nWhat's up it's Chris and Bentles from your computer hanging out at localhost:5000/sms. You just sent me this message, " + '"' + incoming_msg + '".'
     msg.body(final_body)
+    print(final_body)
 
     return str(resp)
-
 
 # Start the server when this file runs
 if __name__ == "__main__":

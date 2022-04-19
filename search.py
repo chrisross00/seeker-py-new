@@ -87,11 +87,11 @@ def generate_results(search_result, result_ids, mode, save):
             unique_results.append(search_result[i].unique_result)
         else:  
             pass
+    
     if unique_results:
         updated_search['searches'].append(unique_results)
-    
-    if save:
-        utils.save_db(updated_search, utils.prop('reddit_db.save_path'))
+        if save:
+            utils.save_db(updated_search, utils.prop('reddit_db.save_path'))
     
     if mode == 'all':
         return updated_search 
