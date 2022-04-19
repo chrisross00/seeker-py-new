@@ -21,7 +21,7 @@ limit = 4 #limit for the queries (move to config.json)
 # does searches ever go deeper than [0] ANSWER: no
 search_result = pure_search(search_queries, subreddit, limit)
 result_ids = eval_refactor(search_result)
-final_results = generate_results(search_result, result_ids, 'new')
+final_results = generate_results(search_result, result_ids, 'new', False)
 
 # Twilio stuff
 message_parts_list = twilio.message.parse_results(final_results)

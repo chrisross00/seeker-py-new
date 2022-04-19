@@ -78,7 +78,7 @@ def eval_refactor(search_result): #Given a list of searches, return the ids of r
                 results.append(result['result_id'])
     return results
 
-def generate_results(search_result, result_ids, mode):
+def generate_results(search_result, result_ids, mode, save):
     unique_results = []
     updated_search = utils.open_db(utils.prop('database.open_path'))
     for i in range(len(search_result)):
@@ -90,8 +90,10 @@ def generate_results(search_result, result_ids, mode):
     if unique_results:
         updated_search['searches'].append(unique_results)
     
-    if mode == 'all':
+    if save:
         utils.save_db(updated_search, utils.prop('database.save_path'))
+    
+    if mode == 'all':
         return updated_search 
     elif mode == 'new':
         return unique_results
