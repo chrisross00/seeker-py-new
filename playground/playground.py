@@ -1,44 +1,20 @@
-from collections import namedtuple
+# # want to see if a hashed html page stored as an object is different when the smallest thing changes
 
-class MyObject:
-    def __init__(self, d=None):
-        if d is not None:
-            for key, value in d.items():
-                setattr(self, key, value)
+# import urllib.request
+# fp = urllib.request.urlopen("http://www.python.org")
+# tp = urllib.request.urlopen("http://www.python.org")
 
-search = {
-    'result_id': 'asdf2423', 
-    'body':  {
-        'author': 'asdf',
-        'title': 'title',
-        'created_date': 'date',
-        'url': 'website'
-    }
-}
+# mybytes = fp.read()
 
-obj_dict = {}
-o = MyObject(search) #one way to convert to object
-dict_object = namedtuple("DictObject", search.keys())(*search.values()) #another way to convert to object
+# mystr = mybytes.decode("utf8")
+# fp.close
 
-# if i'm passing a dict, I need to flatten it; the original object retrieved in search is flat, the dict is layered
+# print(mystr)
+# # pyngrok testing
+from pyngrok import ngrok
 
-for key, value in search.items():
-    if type(value) is dict:
-        # newthing = namedtuple("newThing", value.keys())(*value.values())
-        for k, v in value.items():
-            obj_dict[k] = v
-    else:
-        obj_dict[key] = value
+ngrok.set_auth_token("281yp8vS4XPZST04lY4MH324v54_Lj1PAyfoUvsB6o6utPXc")
+http_tunnel = ngrok.connect(5000)
+print(http_tunnel.public_url)
 
-# can I just call dict_object.key3 and replace that with the namedtuple assignment
-
-# dict_object.key3 = sub_object
-
-
-# Result = namedtuple('Result', ['x', 'y'])
-# result = Result(5, 6)\
-
-
-
-
-# convert list of objects to one big object?
+ngrok.disconnect(http_tunnel.public_url)

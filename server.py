@@ -1,15 +1,17 @@
 import requests
 import utils
 from flask import Flask, render_template, request
+from flask_ngrok import run_with_ngrok
 from numpy import concatenate
 from pandas import concat
-
+from pyngrok import ngrok
 from twilio.twiml.messaging_response import MessagingResponse
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
 
 # Create a Flask app
 app = Flask(__name__)
+run_with_ngrok(app)
 
 # Create a route that just returns "In progress"
 @app.route("/")
@@ -37,6 +39,8 @@ def handle_incoming_msg():
 
     return str(resp)
 
-# Start the server when this file runs
+
+# Start the web server when this file runs
+# also run ngrok http 5000
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run()
