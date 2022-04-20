@@ -4,7 +4,6 @@ from flask import Flask, render_template, request
 from flask_ngrok import run_with_ngrok
 from numpy import concatenate
 from pandas import concat
-from pyngrok import ngrok
 from twilio.twiml.messaging_response import MessagingResponse
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
