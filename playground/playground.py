@@ -1,20 +1,42 @@
-# # want to see if a hashed html page stored as an object is different when the smallest thing changes
+from datetime import datetime
+from flask import Flask, FlaskForm
+from flask_sqlalchemy import SQLAlchemy
 
-# import urllib.request
-# fp = urllib.request.urlopen("http://www.python.org")
-# tp = urllib.request.urlopen("http://www.python.org")
+# create a Flask instance
+app = Flask(__name__)
 
-# mybytes = fp.read()
+# add database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+# secret key
+app.config['SECRET_KEY'] = 'supersecretkey'
+# initialize db
+db = SQLAlchemy(app)
 
-# mystr = mybytes.decode("utf8")
-# fp.close
+# Create a Model - required to create a database
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200), nullable=False, unique=True)
+    date_added =db.Column(db.DateTime, default=datetime.utcnow)
 
-# print(mystr)
-# # pyngrok testing
-from pyngrok import ngrok
+    # Create a string
+    def __repr__(self):
+        return '<Name %r>' % self.name
 
-ngrok.set_auth_token("281yp8vS4XPZST04lY4MH324v54_Lj1PAyfoUvsB6o6utPXc")
-http_tunnel = ngrok.connect(5000)
-print(http_tunnel.public_url)
 
-ngrok.disconnect(http_tunnel.public_url)
+def example_add_user():
+    name = None
+    form = UserForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data) #query the database, get all the users who have the email matching what is passed to the email parameter
+        if user is None: #if user doesn't exist, create one
+            user = Users(name=form.name.data, email=form.email.data)
+            db.session.add(user)
+            db.session.commit()
+        name = form.name.data
+        form.name.data = ''
+        form.email.data = ''
+        flash("User added successfully!")
+
+# To query db and add to page
+## https://youtu.be/Q2QmST-cSwc?t=1130

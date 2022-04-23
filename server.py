@@ -1,9 +1,7 @@
 import requests
 import utils
-from flask import Flask, render_template, request
+from flask import Flask, request
 from flask_ngrok import run_with_ngrok
-from numpy import concatenate
-from pandas import concat
 from twilio.twiml.messaging_response import MessagingResponse
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
@@ -11,6 +9,12 @@ from twilio.twiml.messaging_response import MessagingResponse
 # Create a Flask app
 app = Flask(__name__)
 run_with_ngrok(app)
+
+# # If local
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'something local'
+# auth_config = utils.get_auth_config_parameters()
+# # If prod
+# app.config['SQLALCHEMY_DATABASE_URI'] = auth_config['SQLALCHEMY_DATABASE_URI']
 
 # Create a route that just returns "In progress"
 @app.route("/")
@@ -35,7 +39,6 @@ def handle_incoming_msg():
     msg = resp.message()
     msg.body(final_body)
     print(final_body)
-
     return str(resp)
 
 

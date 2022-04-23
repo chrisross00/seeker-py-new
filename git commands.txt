@@ -1,4 +1,0 @@
-# Change repo URL
-git remote set-url origin https://github.com/chrisross00/seeker-py-new-new
-
-Should be able to send the change to whatever repo via VScode after

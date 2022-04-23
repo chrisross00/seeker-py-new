@@ -1,19 +1,56 @@
-from time import time
+import requests
 import utils
-import twilio
+import time
 from dateutil import parser 
 from datetime import datetime
 from twilio.rest import Client
 
 class Twilio:
+    #https://www.twilio.com/docs/phone-numbers/api/incomingphonenumber-resource#read-multiple-incomingphonenumber-resources
     def __init__(self):
-        auth_config = utils.get_twilio_instance_parameters()
+        auth_config = utils.get_auth_config_parameters()
         self.twilio = Client(auth_config["TWILIO_ACCOUNT_SID"], auth_config["TWILIO_AUTH_TOKEN"])
         self.from_number = auth_config["TWILIO_FROM_NUMBER"]
         self.to_number = auth_config["TWILIO_TO_NUMBER"]
         self.message = self.Message(self)
+        self.ph_sid = self.get_phone_sid()
+        print(f'self.ph_sid, {self.ph_sid}')
+        self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
+        self.ngrok_url = self.get_ngrok_url()
 
-    test_to_number = 1
+    def get_phone_sid(self):
+        print('get_phone_sid hit', self.twilio)
+        nums = self.twilio.incoming_phone_numbers.list() 
+        print('nums hit', nums)
+        for x in nums:
+            print(f"x, {x.sid}")
+            self.ph_sid = x.sid
+        return x.sid
+
+    def get_ngrok_url(self):
+        # get the ngrok public_url once the server is up
+        # will fail if server is down - don't want to build handling rn
+        local_url = 'http://localhost:4040/api/tunnels'
+        response = requests.get(local_url)
+        while response.status_code != 200:
+            time.sleep(5)
+            print('\nWaited 5 s, retrying...')
+            response = requests.get(local_url)
+        print(f'\nDone! Got status code of {response.status_code}')
+        data = response.json()
+        ngrok_url = data['tunnels'][0]['public_url']
+        self.ngrok_url = ngrok_url
+
+        if ngrok_url != self.webhook_url:
+            print(f'\nCaught in IF: updating the webhook url from {self.webhook_url} to {ngrok_url}')
+            self.update_webhook_url(self.ngrok_url)
+
+        return ngrok_url
+        
+    def update_webhook_url(self, target_url):
+        self.twilio.api.incoming_phone_numbers(self.ph_sid).update(sms_url=target_url)
+        print(f'\nUpdate_webhook_url: received request to update webhook url from {self.webhook_url} to {target_url}')
+        self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
 
     class Message:
         def __init__(self, twilio):
@@ -83,3 +120,4 @@ class Twilio:
             messages['messages'].append(self.message_parts)
             utils.save_db(messages, utils.prop('message_db.save_path'))
             return
+

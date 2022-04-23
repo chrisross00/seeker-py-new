@@ -30,7 +30,7 @@ def get_auth_instance():
     )
     return reddit
 
-def get_twilio_instance_parameters():
+def get_auth_config_parameters():
     auth_config = {
     **dotenv_values('.env') #load environment variables
     }
@@ -105,3 +105,10 @@ def check_sent_messages(outside_id): #checks if an id exists in the db of sent m
             else:
                 result = False
     return result
+
+def printy(thing):
+    print('\ndir():\n' , dir(thing))
+    print('\n')
+    print('-'*40)
+    print('\nvars():\n', vars(thing))
+    print('\n')

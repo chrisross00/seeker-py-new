@@ -1,8 +1,8 @@
 # approach 2 - PRAW
 # https://www.reddit.com/r/GoldTesting/comments/3cm1p8/how_to_make_your_bot_use_oauth2/
 
-from search import eval_refactor, pure_search, generate_results
 import utils
+from search import eval_refactor, pure_search, generate_results
 from time import process_time
 from Twilio import Twilio
 

@@ -1,20 +1,16 @@
 {   
-    "config": 
-        {
-            "json_path":"config.json"
-        },
-    "reddit_db":
-        {
+    "config": {
+        "json_path":"config.json"
+    },
+    "reddit_db": {
             "open_path": "reddit_db.json",
             "save_path": "reddit_db.json"
-        },
-    "message_db":
-        {
+    },
+    "message_db": {
             "open_path": "message_db.json",
             "save_path": "message_db.json"
-        },
-    "twilio":
-        {
+    },
+    "twilio":{
             "twilio_number": ""
-        }
+    }
 }
