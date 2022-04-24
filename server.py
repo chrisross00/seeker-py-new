@@ -1,6 +1,7 @@
 import requests
 import utils
 from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
 from flask_ngrok import run_with_ngrok
 from twilio.twiml.messaging_response import MessagingResponse
 
@@ -11,10 +12,12 @@ app = Flask(__name__)
 run_with_ngrok(app)
 
 # # If local
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'something local'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///models/searches.db'
 # auth_config = utils.get_auth_config_parameters()
 # # If prod
 # app.config['SQLALCHEMY_DATABASE_URI'] = auth_config['SQLALCHEMY_DATABASE_URI']
+
+db = SQLAlchemy(app)
 
 # Create a route that just returns "In progress"
 @app.route("/")
