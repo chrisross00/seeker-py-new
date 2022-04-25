@@ -4,7 +4,7 @@
 import utils
 from models.SearchModel import pure_search, eval, db
 from time import process_time
-from Twilio import Twilio
+from models.MessageModel import Twilio
 
 def runmain():
     t1_start = process_time()

@@ -1,7 +1,7 @@
 from flask import Blueprint
 from models.base import db
 from models.SearchModel import Query, Search, SearchResultDb
-from models.TwilioModel import Message
+from models.MessageModel import Message
 
 message = Blueprint('message',__name__)
 query = Blueprint('query',__name__)

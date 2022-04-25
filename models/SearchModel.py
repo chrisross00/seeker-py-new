@@ -2,7 +2,10 @@ from datetime import datetime
 from sqlalchemy.orm import backref
 from models.base import db
 
-# Model definition
+# ==================================================================
+# Database table definitions
+# ==================================================================
+
 class Query(db.Model): # a list of searches makes a query... it's a "query" to Reddit's API
     id = db.Column(db.Integer, primary_key=True)
     searches = db.relationship('Search', backref='query',lazy=True)
@@ -16,6 +19,7 @@ class Search(db.Model): # an object with search parameters and search results is
     id = db.Column(db.Integer, primary_key=True)
     query_id = db.Column(db.Integer, db.ForeignKey('query.id'), nullable=False)
     search_results = db.relationship('SearchResultDb', backref=backref('search',order_by=id))
+    created_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Create a string
     def __repr__(self):
@@ -32,14 +36,21 @@ class SearchResultDb(db.Model):
     title = db.Column(db.String(200), nullable=False)
     url = db.Column(db.String(200), nullable=False)
     post_date_local = db.Column(db.String(200), nullable=False)
-    post_date_utc = db.Column(db.String(200), nullable=False)
+    post_date_utc = db.Column(db.Integer, nullable=False)
     evaluated = db.Column(db.Integer, nullable=False)
+    insert_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Create a string
     def __repr__(self):
         return '<id %r>' % self.id
 
+
+# ==================================================================
 # App object definition
+# ==================================================================
+
+from models.MessageModel import add_result
+
 class SearchResult:
     def __init__(self, search, query, db_q):
         self.search = search
@@ -93,7 +104,9 @@ def eval(): # Rewritten! 4/24 @ 13:35
         if u.result_id in evaluated_list:
             SearchResultDb.query.filter_by(result_id=u.result_id, evaluated=0).delete()
         else:
+            print('evaluated caught, setting to 1')
             u.evaluated = 1
             db.session.add(u)
+            add_result(u)
     db.session.commit()
     return None

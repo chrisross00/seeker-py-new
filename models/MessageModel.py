@@ -2,8 +2,64 @@ import requests
 import utils
 import time
 from dateutil import parser 
-from datetime import datetime
+import calendar
+import datetime
+from models.base import db
+from models.SearchModel import SearchResultDb
 from twilio.rest import Client
+
+# ==================================================================
+# Database table definitions
+# ==================================================================
+
+class Message(db.Model): 
+    __tablename__ = "Message"
+
+    id = db.Column(db.Integer, primary_key=True)
+    message_body = db.Column(db.String(2000), nullable=True)
+    status = db.Column(db.Integer, nullable=False)
+    scraped_title = db.Column(db.String(100), nullable=False)
+    datediff_total_seconds = db.Column(db.Integer, nullable=False)
+    url = db.Column(db.String(200), nullable=False)
+    result_id = db.Column(db.String, nullable=False)
+
+    # Create a string
+    def __repr__(self):
+        return '<id %r>' % self.id
+
+
+# ==================================================================
+# Message related functions definition
+# ==================================================================
+
+def add_result(result):
+    # check if unique first
+    unique_messages = Message.query.filter_by(result_id=result.result_id).all()
+    if unique_messages:
+        print(f'Already in table, {result.result_id}')
+        return
+    else:
+        # do some date time math
+        d = datetime.datetime.utcnow()
+        utc_time = calendar.timegm(d.utctimetuple())
+
+        datediff_obj = utc_time - result.post_date_utc
+
+        result = Message(
+            status=0,
+            scraped_title=str(result.title),
+            datediff_total_seconds=datediff_obj,
+            url=result.url,
+            result_id=result.result_id
+        )
+        print('received result as: ', result)
+        db.session.add(result)
+        db.session.commit()
+        return result
+
+# ==================================================================
+# App object definition
+# ==================================================================
 
 class Twilio:
     #https://www.twilio.com/docs/phone-numbers/api/incomingphonenumber-resource#read-multiple-incomingphonenumber-resources
@@ -12,7 +68,7 @@ class Twilio:
         self.twilio = Client(auth_config["TWILIO_ACCOUNT_SID"], auth_config["TWILIO_AUTH_TOKEN"])
         self.from_number = auth_config["TWILIO_FROM_NUMBER"]
         self.to_number = auth_config["TWILIO_TO_NUMBER"]
-        self.message = self.Message(self)
+        self.message = self.Twilio_Message(self)
         self.ph_sid = self.get_phone_sid()
         print(f'self.ph_sid, {self.ph_sid}')
         self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
@@ -52,7 +108,7 @@ class Twilio:
         print(f'\nUpdate_webhook_url: received request to update webhook url from {self.webhook_url} to {target_url}')
         self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
 
-    class Message:
+    class Twilio_Message:
         def __init__(self, twilio):
             self.from_number = twilio.from_number
             self.to_number = twilio.to_number
@@ -120,4 +176,3 @@ class Twilio:
             messages['messages'].append(self.message_parts)
             utils.save_db(messages, utils.prop('message_db.save_path'))
             return
-
