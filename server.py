@@ -1,5 +1,7 @@
 import requests
 import utils
+from runmain import runmain
+from application import create_app
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_ngrok import run_with_ngrok
@@ -7,22 +9,19 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
 
-# Create a Flask app
-app = Flask(__name__)
+app = create_app()
 run_with_ngrok(app)
-
-# # If local
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///models/searches.db'
-# auth_config = utils.get_auth_config_parameters()
-# # If prod
-# app.config['SQLALCHEMY_DATABASE_URI'] = auth_config['SQLALCHEMY_DATABASE_URI']
-
-db = SQLAlchemy(app)
 
 # Create a route that just returns "In progress"
 @app.route("/")
 def serve_homepage():
     return "In progress!"
+
+@app.route("/test") #will loop the app.py script while on thie page
+def run_test():
+    r = runmain 
+    r()
+    return "Testing Reddit to Twilio connection!"
 
 @app.route("/sms", methods=['POST'])
 def handle_incoming_msg():
@@ -43,7 +42,6 @@ def handle_incoming_msg():
     msg.body(final_body)
     print(final_body)
     return str(resp)
-
 
 # Start the web server when this file runs
 # also run ngrok http 5000

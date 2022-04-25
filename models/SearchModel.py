@@ -1,8 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import backref
-from server import db as server_db
-
-db = server_db
+from models.base import db
 
 # Model definition
 class Query(db.Model): # a list of searches makes a query... it's a "query" to Reddit's API
