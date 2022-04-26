@@ -16,25 +16,17 @@ def runmain():
     search_queries = ["jelly","olivia","yugo"] #list of the queries to search for (move to config.json)
     limit = 2 #limit for the queries (move to config.json)
 
-    # does searches ever go deeper than [0] ANSWER: no
     search_result = pure_search(search_queries, subreddit, limit)
     eval()
 
     # Twilio stuff
     twilio = Twilio()
-    # message_parts_list = twilio.message.parse_results(final_results) # broken until refactored for db
-    # message_list = twilio.message.build_message(message_parts_list) # broken until refactored for db
-
-    # store the messages sent BEFORE sending so you guarantee the id is already in the db before the user responds
-    # twilio.message.store_messages() #broken until refactored for db
-
-    #send the messages
-    # twilio.message.send_message(message_list) #broken until refactored for db
-
+    twilio.message.build_message()
+    twilio.message.send_message()
 
     # Timer and teardown
     t1_stop = process_time()
     print(f'\nDone!\nTotal time (seconds): {t1_stop-t1_start}\nPress any key to close the program.')
     # input()
     # sys.exit('Exit.')
-    exit()
+    return True

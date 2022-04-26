@@ -18,15 +18,16 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message_body = db.Column(db.String(2000), nullable=True)
     status = db.Column(db.Integer, nullable=False)
+    search_query = db.Column(db.String(100),nullable=False)
     scraped_title = db.Column(db.String(100), nullable=False)
     datediff_total_seconds = db.Column(db.Integer, nullable=False)
     url = db.Column(db.String(200), nullable=False)
     result_id = db.Column(db.String, nullable=False)
+    user_replied = db.Column(db.Integer, nullable=True)
 
     # Create a string
     def __repr__(self):
         return '<id %r>' % self.id
-
 
 # ==================================================================
 # Message related functions definition
@@ -36,7 +37,6 @@ def add_result(result):
     # check if unique first
     unique_messages = Message.query.filter_by(result_id=result.result_id).all()
     if unique_messages:
-        print(f'Already in table, {result.result_id}')
         return
     else:
         # do some date time math
@@ -49,13 +49,27 @@ def add_result(result):
             status=0,
             scraped_title=str(result.title),
             datediff_total_seconds=datediff_obj,
+            search_query=result.search_query,
             url=result.url,
-            result_id=result.result_id
+            result_id=result.result_id,
+            user_replied=0
         )
-        print('received result as: ', result)
         db.session.add(result)
         db.session.commit()
         return result
+
+def handle_incoming_message(outside_id):
+    m_id = Message.query.filter_by(result_id=outside_id).first()
+    if m_id: # if the outside id matches a result_id in the Message table, it's a reply
+        result = {'id': outside_id}
+        m_id.user_replied = 1
+        db.session.add(m_id)
+        # kick off some reddit reply process
+    else:
+        result = False
+    
+    db.session.commit()
+    return result
 
 # ==================================================================
 # App object definition
@@ -70,16 +84,12 @@ class Twilio:
         self.to_number = auth_config["TWILIO_TO_NUMBER"]
         self.message = self.Twilio_Message(self)
         self.ph_sid = self.get_phone_sid()
-        print(f'self.ph_sid, {self.ph_sid}')
         self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
         self.ngrok_url = self.get_ngrok_url()
 
     def get_phone_sid(self):
-        print('get_phone_sid hit', self.twilio)
         nums = self.twilio.incoming_phone_numbers.list() 
-        print('nums hit', nums)
         for x in nums:
-            print(f"x, {x.sid}")
             self.ph_sid = x.sid
         return x.sid
 
@@ -92,20 +102,20 @@ class Twilio:
             time.sleep(5)
             print('\nWaited 5 s, retrying...')
             response = requests.get(local_url)
-        print(f'\nDone! Got status code of {response.status_code}')
+        # print(f'\nDone! Got status code of {response.status_code}')
         data = response.json()
         ngrok_url = data['tunnels'][0]['public_url']
-        self.ngrok_url = ngrok_url
+        self.ngrok_url = ngrok_url+'/sms'
 
         if ngrok_url != self.webhook_url:
-            print(f'\nCaught in IF: updating the webhook url from {self.webhook_url} to {ngrok_url}')
+            # print(f'\nCaught in IF: updating the webhook url from {self.webhook_url} to {ngrok_url}')
             self.update_webhook_url(self.ngrok_url)
 
         return ngrok_url
         
     def update_webhook_url(self, target_url):
         self.twilio.api.incoming_phone_numbers(self.ph_sid).update(sms_url=target_url)
-        print(f'\nUpdate_webhook_url: received request to update webhook url from {self.webhook_url} to {target_url}')
+        # print(f'\nUpdate_webhook_url: received request to update webhook url from {self.webhook_url} to {target_url}')
         self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
 
     class Twilio_Message:
@@ -117,11 +127,12 @@ class Twilio:
             self.message_parts = []
             self.message_list = []
 
-        def build_message(self, message_parts_list):
+        def build_message(self): # Rewritten!
             #build body with message_parts_list
-            for i in range(len(message_parts_list)):
-                # day in s = 86400
-                s_ago = message_parts_list[i]['datediff_total_seconds']
+            messages = Message.query.filter_by(message_body=None).all()
+
+            for message_parts in messages:
+                s_ago = message_parts.datediff_total_seconds
 
                 if s_ago < 86400:
                     if s_ago > 5400: #if greater than 1.5h ago, but less than a day, put it in hours
@@ -143,36 +154,19 @@ class Twilio:
                     t = str(t)
                     time_ago = t + ' days ago'
                 
-                message = '\n\n: \n\nNew post found!\n\nQuery: ' + message_parts_list[i]['query'] + '\n\nTitle: "' + str(message_parts_list[i]['title']) + '".\n\nPosted ' + time_ago + '\n\nURL: ' + message_parts_list[i]['url'] + '\n\nTo comment on the post and PM the author, reply with the ID: ' + str(message_parts_list[i]['id'])
-                self.message_list.append(message)
+                message = '\n\n: \n\nNew post found!\n\nQuery: ' + message_parts.search_query + '\n\nTitle: "' + message_parts.scraped_title + '".\n\nPosted ' + time_ago + '\n\nURL: ' + message_parts.url + '\n\nTo comment on the post and PM the author, reply with the ID: ' + message_parts.result_id
+                message_parts.message_body = message
+                db.session.add(message_parts)
+                print('done building!!')
+            db.session.commit()
+            return 
 
-            return self.message_list
-
-        def send_message(self,body):
-            #build body with message_parts_list
-            for b in body:
-                self.messages.create(body=b,from_=self.from_number,to=self.to_number)
-
-        def parse_results(self, final_results):
-            current_time = parser.parse(str(datetime.now()))
-            for i in range(len(final_results)):
-                for j in range(len(final_results[i]['search_results'])):
-                    datediff_obj = current_time - parser.parse(str(final_results[i]['search_results'][j]['body']['created_date_local']))
-                    self.message_parts.append(
-                        {
-                            'title': str(final_results[i]['search_results'][j]['body']['title']),
-                            'datediff_total_seconds': datediff_obj.total_seconds(),
-                            'datediff_days' : datediff_obj.days,
-                            'datediff_seconds' : datediff_obj.seconds,
-                            'url': final_results[i]['search_results'][j]['body']['url'],
-                            'id': final_results[i]['search_results'][0]['result_id'],
-                            'query': final_results[i]['search_parameters']['query'],
-                            'status':0
-                        })
-            return self.message_parts #could just add the full message as another key in the message_parts object
-        
-        def store_messages(self):
-            messages = utils.open_db(utils.prop('message_db.open_path'))
-            messages['messages'].append(self.message_parts)
-            utils.save_db(messages, utils.prop('message_db.save_path'))
+        def send_message(self): #Rewritten!
+            messages = Message.query.filter_by(status=0).all()
+            for message in messages:
+                self.messages.create(body=message.message_body,from_=self.from_number,to=self.to_number)
+                message.status = 1
+                db.session.add(message)
+            db.session.commit()
+            print('done sending messages')
             return
