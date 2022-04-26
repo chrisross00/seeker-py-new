@@ -1,4 +1,4 @@
-from runmain import runmain
+from runmain import runmain, clean_up_db
 from application import create_app
 from flask import Flask, request
 from flask_ngrok import run_with_ngrok
@@ -7,6 +7,7 @@ from models.MessageModel import handle_incoming_message
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
 r = runmain 
+d = clean_up_db
 app = create_app()
 
 # Create a route that just returns "In progress"
@@ -18,6 +19,11 @@ def serve_homepage():
 def run_test():
     r()
     return "Testing Reddit to Twilio connection!"
+
+@app.route("/clean") #will loop the app.py script while on thie page
+def clean():
+    d()
+    return "Cleaning the database!"
 
 @app.route("/sms", methods=['POST'])
 def handle_incoming_msg():

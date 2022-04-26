@@ -5,7 +5,6 @@ from dateutil import parser
 import calendar
 import datetime
 from models.base import db
-from models.SearchModel import SearchResultDb
 from twilio.rest import Client
 
 # ==================================================================
@@ -157,7 +156,6 @@ class Twilio:
                 message = '\n\n: \n\nNew post found!\n\nQuery: ' + message_parts.search_query + '\n\nTitle: "' + message_parts.scraped_title + '".\n\nPosted ' + time_ago + '\n\nURL: ' + message_parts.url + '\n\nTo comment on the post and PM the author, reply with the ID: ' + message_parts.result_id
                 message_parts.message_body = message
                 db.session.add(message_parts)
-                print('done building!!')
             db.session.commit()
             return 
 
