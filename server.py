@@ -1,5 +1,3 @@
-import requests
-import utils
 from runmain import runmain
 from application import create_app
 from flask import Flask, request
@@ -8,7 +6,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from models.MessageModel import handle_incoming_message
 
 #https://www.twilio.com/blog/build-a-sms-chatbot-with-python-flask-and-twilio
-
+r = runmain 
 app = create_app()
 
 # Create a route that just returns "In progress"
@@ -18,7 +16,6 @@ def serve_homepage():
 
 @app.route("/test") #will loop the app.py script while on thie page
 def run_test():
-    r = runmain 
     r()
     return "Testing Reddit to Twilio connection!"
 
