@@ -8,15 +8,15 @@ roadmap.md
 /models/searches.db
 /migrations/
 app.db
+__pycache__/
+*.py[cod]
+*$py.class
 
 # ======================
 # Boilerplate Below
 # ======================
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
 
 # C extensions
 *.so

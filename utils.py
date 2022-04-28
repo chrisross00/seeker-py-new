@@ -83,32 +83,17 @@ def setProp(key, value):
     path = props['input']['config']
     update_file(props, path)
 
-def get_db_ids(previous_search):
-    previous_id_list = []
-    i_len = len(previous_search['searches']) #length of the current db searches
-
-    for i in range(i_len):
-        j_len = len(previous_search['searches'][i]) #length of the j loop for some reason this works lol
-        for j in range(j_len):
-            k_len = len(previous_search['searches'][i][j]['search_results'])
-            for k in range(k_len):
-                previous_id_list.append(previous_search['searches'][i][j]['search_results'][k]['result_id']) #store the id to the previous_id_list
-    
-    return previous_id_list
-
-def check_sent_messages(outside_id): #checks if an id exists in the db of sent messages
-    m = open_db(prop('message_db.open_path'))
-    for i in range(len(m['messages'])):
-        for j in range (len(m['messages'][i])):
-            if m['messages'][i][j]['id'] == outside_id:
-                result = {'id': m['messages'][i][j]['id']}
-            else:
-                result = False
-    return result
-
 def printy(thing):
     print('\ndir():\n' , dir(thing))
     print('\n')
     print('-'*40)
     print('\nvars():\n', vars(thing))
     print('\n')
+
+# Migrate timer to utils?
+    # t1_start = process_time()
+    # # Timer and teardown
+    # t1_stop = process_time()
+    # # print(f'\nDone!\nTotal time (seconds): {t1_stop-t1_start}\nPress any key to close the program.')
+    # # input()
+    # # sys.exit('Exit.')

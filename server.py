@@ -1,4 +1,4 @@
-from runmain import runmain, clean_up_db
+from runmain import runmain, clean_up_db, test
 from application import create_app
 from flask import Flask, request
 from flask_ngrok import run_with_ngrok
@@ -13,12 +13,17 @@ app = create_app()
 # Create a route that just returns "In progress"
 @app.route("/")
 def serve_homepage():
-    return "In progress!"
+    return "This is a home page!"
 
-@app.route("/test") #will loop the app.py script while on thie page
-def run_test():
+@app.route("/runmain") #will loop the app.py script while on thie page
+def run_main():
     r()
     return "Testing Reddit to Twilio connection!"
+
+@app.route("/test")
+def run_test():
+    test()
+    return "Test script!"
 
 @app.route("/clean") #will loop the app.py script while on thie page
 def clean():
@@ -40,7 +45,7 @@ def handle_incoming_msg():
     msg.body(final_body)
     
     print(final_body) #somewhere in here, need to save the inbound-message?
-    return str(resp)
+    return 
 
 # Start the web server when this file runs
 # also run ngrok http 5000
