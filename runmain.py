@@ -11,7 +11,7 @@ def runmain():
 
     # Search setup
     subreddit = reddit.subreddit("mechmarket") #set the subreddit object
-    search_queries = ["owlabs","olivia","yugo"] #list of the queries to search for (move to config.json)
+    search_queries = ["owlabs","j-01","yugo"] #list of the queries to search for (move to config.json)
     limit = 1 #limit for the queries (move to config.json)
 
     search_result = reddit_search(search_queries, subreddit, limit)
@@ -21,6 +21,7 @@ def runmain():
     twilio = Twilio()
     twilio.message.build_message()
     twilio.message.send_message()
+    # print('done!')
 
     return
 
@@ -33,15 +34,15 @@ def test():
     reddit = utils.get_auth_instance()
 
     # Search setup
-    subreddit = reddit.subreddit("mechmarket") #set the subreddit object
-    search_queries = ["owlabs","olivia","yugo"] #list of the queries to search for (move to config.json)
-    limit = 1 #limit for the queries (move to config.json)
+    # subreddit = reddit.subreddit("mechmarket") #set the subreddit object
+    # search_queries = ["owlabs","olivia","yugo"] #list of the queries to search for (move to config.json)
+    # limit = 1 #limit for the queries (move to config.json)
 
-    search_result = reddit_search(search_queries, subreddit, limit)
+    # search_result = reddit_search(search_queries, subreddit, limit)
 
     # # Test sending messages
-    # twilio = Twilio()
+    twilio = Twilio()
     # twilio.message.insert_test_messsage()
-    # twilio.message.build_message()
-    # twilio.message.send_message()
+    twilio.message.build_message()
+    twilio.message.send_message()
     return
