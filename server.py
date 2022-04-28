@@ -50,5 +50,5 @@ def handle_incoming_msg():
 # Start the web server when this file runs
 # also run ngrok http 5000
 if __name__ == "__main__":
-    run_with_ngrok(app)
+    # run_with_ngrok(app)
     app.run()
