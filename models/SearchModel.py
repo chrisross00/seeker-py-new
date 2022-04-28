@@ -83,36 +83,6 @@ class SearchResult:
         
         return None
         
-def pure_search(search_queries, subreddit, limit): # Rewritten! 4/24 @ 11:42
-    db_q = OutQuery()
-    print('db_q is: ', db_q)
-    db.session.add(db_q)
-    for query in search_queries: #work through the list of queries
-        new_search = subreddit.search(query, sort="new", limit=limit)
-        s = SearchResult(new_search, query, db_q)
-        db_q.searches.append(s.search_result)
-    db.session.commit()
-    return db_q
-
-def eval(): # Rewritten! 4/24 @ 13:35 
-    # need to look into best practices around deleting, but whatever for now
-    unevaluated = SearchResultDb.query.filter_by(evaluated=0).all()
-    evaluated = SearchResultDb.query.filter_by(evaluated=1).all()
-    evaluated_list = []
-
-    for e in evaluated:
-        evaluated_list.append(e.result_id)
-
-    for u in unevaluated: # remove if the unevaluated row is in the list of evaluated rows
-        if u.result_id in evaluated_list:
-            SearchResultDb.query.filter_by(result_id=u.result_id, evaluated=0).delete()
-        else:
-            u.evaluated = 1
-            db.session.add(u)
-            add_result(u)
-    db.session.commit()
-    return None
-
 def reddit_search(search_queries, subreddit, limit):
 
     # Run the search
@@ -141,13 +111,22 @@ def reddit_search(search_queries, subreddit, limit):
             add_result(u)
     db.session.commit()
     
-    # Dump Search tables
+    # Dump Search tables if no children
     SearchTable = Search.query.all()
     for u in SearchTable:
         if SearchResultDb.query.filter_by(search_id=u.id).all():
             pass
         else:
             Search.query.filter_by(id=u.id).delete()
+    db.session.commit()
+    
+    # Dump OutQuery tables if no children
+    OutQueryTable = OutQuery.query.all()
+    for u in OutQueryTable:
+        if Search.query.filter_by(query_id=u.id).all():
+            pass
+        else:
+            OutQuery.query.filter_by(id=u.id).delete()
     db.session.commit()
     
     return None
