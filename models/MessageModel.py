@@ -28,6 +28,28 @@ class Message(db.Model):
     def __repr__(self):
         return '<id %r>' % self.id
 
+# class MessageReply(db.Model):
+#     __tablename__ = "MessageReply"
+#     id =
+#     message_body =
+
+
+    # add messageREply table to model
+## Steps 
+    # Server gets response and pulls method from MessageModel to insert the reply as a MessageReply
+        # Analyze the request.values object on server.py and see if it has anything distinct I can pull off
+    # That method should pass the message to Reddit
+    # Reddit uses result_id to look up the author and keyword? to build a message to the author
+        # Send message to author
+        # comment on original submission with "Pm"
+
+    # alternative, could send a link with a randomized token on it, taking user to an API that uses the token to send the message to the reddit user
+        # removes need for inbound SMS handling, keeps Twilio cost down
+        # doesn't build out any SMS-command based functionality that I could reuse later
+        # Does make it easier for the user to "reply" - typing the request_id is burdensome; could be replaced with a number/unique_id, but a link will always be easier
+        
+
+
 # ==================================================================
 # Message related functions definition
 # ==================================================================
@@ -99,7 +121,7 @@ class Twilio:
         response = requests.get(local_url)
         while response.status_code != 200:
             time.sleep(5)
-            print('\nWaited 5 s, retrying...')
+            print('\nRetrying local endpoint...')
             response = requests.get(local_url)
         # print(f'\nDone! Got status code of {response.status_code}')
         data = response.json()
@@ -159,12 +181,26 @@ class Twilio:
             db.session.commit()
             return 
 
-        def send_message(self): #Rewritten!
+        def send_message(self): 
             messages = Message.query.filter_by(status=0).all()
             for message in messages:
                 self.messages.create(body=message.message_body,from_=self.from_number,to=self.to_number)
                 message.status = 1
                 db.session.add(message)
             db.session.commit()
-            print('done sending messages')
+            return
+
+        def insert_test_messsage(self): 
+            Message.query.filter_by(result_id='test123').delete()
+            result = Message(
+                status=0,
+                scraped_title='test title',
+                datediff_total_seconds=1,
+                search_query='test',
+                url='test_url',
+                result_id='test123',
+                user_replied=0
+            )
+            db.session.add(result)
+            db.session.commit()
             return
