@@ -64,12 +64,10 @@ def add_result(result):
         utc_time = calendar.timegm(d.utctimetuple())
 
         datediff_obj = utc_time - result.post_date_utc
-        firstHun = str(result.title)
-        firstHun = firstHun[:100]
 
         result = Message(
             status=0,
-            scraped_title=firstHun,
+            scraped_title=str(result.title),
             datediff_total_seconds=datediff_obj,
             search_query=result.search_query,
             url=result.url,

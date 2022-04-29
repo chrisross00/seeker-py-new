@@ -67,6 +67,8 @@ class SearchResult:
         s = Search(query_id=db_q, parameter_id=par_id)
 
         for result in self.search:
+            firstHun = str(result.title)
+            firstHun = firstHun[:100]
             sr = SearchResultDb(
                 search=s, 
                 result_id=str(result),
@@ -74,7 +76,7 @@ class SearchResult:
                 subreddit=result.subreddit.display_name,
                 subreddit_id=result.subreddit_id,
                 author=result.author.name, 
-                title=str(result.title), 
+                title=firstHun, 
                 post_date_local=datetime.fromtimestamp(result.created_utc).strftime('%Y-%m-%d %H:%M:%S'),
                 post_date_utc=result.created_utc,
                 url=result.url,
