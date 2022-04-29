@@ -28,7 +28,7 @@ pytz==2022.1
 pytz-deprecation-shim==0.1.0.post0
 requests==2.27.1
 six==1.16.0
-SQLAlchemy==1.4.36
+SQLAlchemy==1.3.23
 twilio==7.8.2
 tzdata==2022.1
 tzlocal==4.2
