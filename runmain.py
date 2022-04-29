@@ -15,10 +15,9 @@ def runmain():
     reddit_search(search_params, reddit)
 
     # Twilio stuff
-    # twilio = Twilio()
-    # twilio.message.build_message()
-    # twilio.message.send_message()
-    # print('done!')
+    twilio = Twilio()
+    twilio.message.build_message()
+    twilio.message.send_message()
 
     return
 
@@ -37,11 +36,11 @@ def test():
 
     # search_result = reddit_search(search_queries, subreddit, limit)
 
-    # # Test sending messages
-    # twilio = Twilio()
-    # twilio.message.insert_test_messsage()
-    # twilio.message.build_message()
-    # twilio.message.send_message()
+    # Test sending messages
+    twilio = Twilio()
+    twilio.message.insert_test_messsage()
+    twilio.message.build_message()
+    twilio.message.send_message()
     
     return
 
