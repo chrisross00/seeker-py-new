@@ -4,23 +4,20 @@
 import utils
 from models.SearchModel import clean_up_db, reddit_search
 from models.MessageModel import Twilio
+from models.SearchParameters import add_parameters
 
 def runmain():
-    # utils.initialize_props()
+    
     reddit = utils.get_auth_instance()
 
-    # Search setup
-    subreddit = reddit.subreddit("mechmarket") #set the subreddit object
-    search_queries = ["owlabs","j-01","yugo"] #list of the queries to search for (move to config.json)
-    limit = 1 #limit for the queries (move to config.json)
-
-    search_result = reddit_search(search_queries, subreddit, limit)
-    # eval()
+    # get parameters to pass to add_parameters
+    search_params = add_parameters() #get stuff from the UI and pass it to the DB - if you've seen it, use the search param from before: if not store it and use the new one
+    reddit_search(search_params, reddit)
 
     # Twilio stuff
-    twilio = Twilio()
-    twilio.message.build_message()
-    twilio.message.send_message()
+    # twilio = Twilio()
+    # twilio.message.build_message()
+    # twilio.message.send_message()
     # print('done!')
 
     return
@@ -41,10 +38,10 @@ def test():
     # search_result = reddit_search(search_queries, subreddit, limit)
 
     # # Test sending messages
-    twilio = Twilio()
-    twilio.message.insert_test_messsage()
-    twilio.message.build_message()
-    twilio.message.send_message()
-
+    # twilio = Twilio()
+    # twilio.message.insert_test_messsage()
+    # twilio.message.build_message()
+    # twilio.message.send_message()
     
     return
+

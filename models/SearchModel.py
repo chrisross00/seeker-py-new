@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import backref
+from models.SearchParameters import SearchParameters
 from models.base import db
 
 # ==================================================================
@@ -22,8 +23,9 @@ class Search(db.Model): # an object with search parameters and search results is
     query_id = db.Column(db.Integer, db.ForeignKey('OutQuery.id'), nullable=False)
     search_results = db.relationship('SearchResultDb', backref=backref('search',order_by=id))
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    parameter_id = db.Column(db.Integer, db.ForeignKey('SearchParameters.id'), nullable=True)
 
-    # Create a string
+    # Create a string 
     def __repr__(self):
         return '<id %r>' % self.id
 
@@ -55,14 +57,14 @@ class SearchResultDb(db.Model):
 from models.MessageModel import add_result
 
 class SearchResult:
-    def __init__(self, search, query, db_q):
+    def __init__(self, search, query, db_q, par_id):
         self.search = search
         self.query = query
         self.search_result = []
         self.unique_result = []
         self.has_unique_result = False
         
-        s = Search(query_id=db_q)
+        s = Search(query_id=db_q, parameter_id=par_id)
 
         for result in self.search:
             sr = SearchResultDb(
@@ -83,14 +85,18 @@ class SearchResult:
         
         return None
         
-def reddit_search(search_queries, subreddit, limit):
+def reddit_search(search_params, reddit):
 
     # Run the search
     db_q = OutQuery()
+    sts = search_params.search_terms.split(',')
+
+    subreddit = reddit.subreddit(search_params.subdomain)
+
     db.session.add(db_q)
-    for query in search_queries: #work through the list of queries
-        new_search = subreddit.search(query, sort="new", limit=limit)
-        s = SearchResult(new_search, query, db_q)
+    for query in sts: #work through the list of queries
+        new_search = subreddit.search(query, sort="new", limit=search_params.limit)
+        s = SearchResult(new_search, query, db_q, search_params.id)
         db_q.searches.append(s.search_result)
     db.session.commit()
 

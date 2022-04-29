@@ -2,10 +2,10 @@ import os
 from runmain import runmain
 from flask import Flask, Blueprint
 from models.base import db, migrate
-from blueprints import outQuery, message, search ,searchResultDb
+from blueprints import outQuery, message, search ,searchResultDb, searchParameters
 from flask_apscheduler import APScheduler
 
-BLUEPRINTS = [outQuery, message, search ,searchResultDb]
+BLUEPRINTS = [outQuery, message, search ,searchResultDb, searchParameters]
 
 ## eventually need to refactor this to be a __init__ file 
 
