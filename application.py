@@ -14,11 +14,11 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', None)
     app.config['SQL_ALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQL_ALCHEMY_TRACK_MODIFICATIONS', None)
 
-    scheduler = APScheduler()
-    scheduler.api_enabled = True
-    scheduler.init_app(app)
-    scheduler.start()
-    scheduler.add_job(id='job_1', func=runmain, args='', trigger='interval',minutes=1)
+    # scheduler = APScheduler()
+    # scheduler.api_enabled = True
+    # scheduler.init_app(app)
+    # scheduler.start()
+    # scheduler.add_job(id='job_1', func=runmain, args='', trigger='interval',minutes=1)
         
     db.init_app(app)
     db.app = app
