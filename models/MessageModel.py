@@ -132,9 +132,9 @@ class Twilio:
                 self.update_webhook_url(self.ngrok_url)
 
         else: # otherwise, in prod, so there is no ngrok
-            self.ngrok_url = None
             prod_sms_url = os.environ.get("TWILIO_WEBHOOK_URL", None)
             self.update_webhook_url(prod_sms_url)
+            ngrok_url = prod_sms_url
 
         return ngrok_url
         
