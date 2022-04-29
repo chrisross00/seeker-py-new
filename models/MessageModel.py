@@ -1,8 +1,6 @@
 import os
 import requests
-import utils
 import time
-from dateutil import parser 
 import calendar
 import datetime
 from models.base import db

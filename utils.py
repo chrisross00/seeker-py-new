@@ -1,7 +1,5 @@
 import praw
 import os
-from dotenv import dotenv_values
-from twilio.rest import Client
 
 def get_auth_instance():
     # Establish authorized Reddit instance

@@ -1,7 +1,7 @@
 import os
 from runmain import runmain, clean_up_db, test
 from application import create_app
-from flask import Flask, request
+from flask import request
 from flask_ngrok import run_with_ngrok
 from twilio.twiml.messaging_response import MessagingResponse
 from models.MessageModel import handle_incoming_message
