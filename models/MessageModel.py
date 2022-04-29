@@ -1,3 +1,4 @@
+import os
 import requests
 import utils
 import time
@@ -99,10 +100,9 @@ def handle_incoming_message(outside_id):
 class Twilio:
     #https://www.twilio.com/docs/phone-numbers/api/incomingphonenumber-resource#read-multiple-incomingphonenumber-resources
     def __init__(self):
-        auth_config = utils.get_auth_config_parameters()
-        self.twilio = Client(auth_config["TWILIO_ACCOUNT_SID"], auth_config["TWILIO_AUTH_TOKEN"])
-        self.from_number = auth_config["TWILIO_FROM_NUMBER"]
-        self.to_number = auth_config["TWILIO_TO_NUMBER"]
+        self.twilio = Client(os.environ.get("TWILIO_ACCOUNT_SID", None), os.environ.get("TWILIO_AUTH_TOKEN", None))
+        self.from_number = os.environ.get("TWILIO_FROM_NUMBER", None)
+        self.to_number = os.environ.get("TWILIO_TO_NUMBER", None)
         self.message = self.Twilio_Message(self)
         self.ph_sid = self.get_phone_sid()
         self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
@@ -117,26 +117,31 @@ class Twilio:
     def get_ngrok_url(self):
         # get the ngrok public_url once the server is up
         # will fail if server is down - don't want to build handling rn
-        local_url = 'http://localhost:4040/api/tunnels'
-        response = requests.get(local_url)
-        while response.status_code != 200:
-            time.sleep(5)
-            print('\nRetrying local endpoint...')
+        local_url = os.environ.get("NGROK_LOCAL_URL", None)
+        if os.environ.get('NGROK_LOCAL_URL', None): # if lower env, do this stuff
             response = requests.get(local_url)
-        # print(f'\nDone! Got status code of {response.status_code}')
-        data = response.json()
-        ngrok_url = data['tunnels'][0]['public_url']
-        self.ngrok_url = ngrok_url+'/sms'
+            while response.status_code != 200:
+                time.sleep(5)
+                print('\nRetrying local endpoint...')
+                response = requests.get(local_url)
+            # print(f'\nDone! Got status code of {response.status_code}')
+            data = response.json()
+            ngrok_url = data['tunnels'][0]['public_url']
+            self.ngrok_url = ngrok_url+'/sms'
 
-        if ngrok_url != self.webhook_url:
-            # print(f'\nCaught in IF: updating the webhook url from {self.webhook_url} to {ngrok_url}')
-            self.update_webhook_url(self.ngrok_url)
+            if ngrok_url != self.webhook_url:
+                # print(f'\nCaught in IF: updating the webhook url from {self.webhook_url} to {ngrok_url}')
+                self.update_webhook_url(self.ngrok_url)
+
+        else: # otherwise, in prod, so there is no ngrok
+            self.ngrok_url = None
+            prod_sms_url = os.environ.get("TWILIO_WEBHOOK_URL", None)
+            self.update_webhook_url(prod_sms_url)
 
         return ngrok_url
         
     def update_webhook_url(self, target_url):
         self.twilio.api.incoming_phone_numbers(self.ph_sid).update(sms_url=target_url)
-        # print(f'\nUpdate_webhook_url: received request to update webhook url from {self.webhook_url} to {target_url}')
         self.webhook_url = self.twilio.api.incoming_phone_numbers(self.ph_sid).fetch()._properties['sms_url']
 
     class Twilio_Message:
