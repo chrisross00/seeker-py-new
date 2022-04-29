@@ -6,7 +6,7 @@ from models.SearchModel import clean_up_db, reddit_search
 from models.MessageModel import Twilio
 
 def runmain():
-    utils.initialize_props()
+    # utils.initialize_props()
     reddit = utils.get_auth_instance()
 
     # Search setup
@@ -31,7 +31,7 @@ def clean():
 
 def test():
     # # Test search
-    reddit = utils.get_auth_instance()
+    # reddit = utils.get_auth_instance()
 
     # Search setup
     # subreddit = reddit.subreddit("mechmarket") #set the subreddit object
@@ -42,7 +42,9 @@ def test():
 
     # # Test sending messages
     twilio = Twilio()
-    # twilio.message.insert_test_messsage()
+    twilio.message.insert_test_messsage()
     twilio.message.build_message()
     twilio.message.send_message()
+
+    
     return
