@@ -1,3 +1,4 @@
+import os
 from runmain import runmain
 from flask import Flask, Blueprint
 from models.base import db, migrate
@@ -10,9 +11,8 @@ BLUEPRINTS = [outQuery, message, search ,searchResultDb]
 
 def create_app():
     app = Flask(__name__)
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://fclgfnmyyveang:6202567584b711b13678cdc116e481ef5f70f6b66ef8ebfc0e662b330d77dc32@ec2-44-199-143-43.compute-1.amazonaws.com:5432/ddes25urmoaa6i'
-    app.config['SQL_ALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', None)
+    app.config['SQL_ALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQL_ALCHEMY_TRACK_MODIFICATIONS', None)
 
     scheduler = APScheduler()
     scheduler.api_enabled = True
