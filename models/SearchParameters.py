@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import backref
+from sqlalchemy import desc
 from models.base import db
 import hashlib
 
@@ -66,6 +67,10 @@ def add_parameters(): # PASS UI PARAMETERS HERE
         db.session.add(params)
         db.session.commit()
         return params
+
+def get_parameters():
+    most_recent_parameters = SearchParameters.query.order_by(desc(SearchParameters.id)).first()
+    return most_recent_parameters
 
 def search_result_hash(params):
     to_hash = str(params.site) + str(params.subdomain) + str(params.search_terms)
