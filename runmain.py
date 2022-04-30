@@ -5,9 +5,9 @@ import utils
 from models.SearchModel import clean_up_db, reddit_search
 from models.MessageModel import Twilio
 
-def runmain(search_params):    
+def runmain():    
     reddit = utils.get_auth_instance()
-    reddit_search(search_params, reddit)
+    reddit_search(reddit)
 
     # Twilio stuff
     twilio = Twilio()
