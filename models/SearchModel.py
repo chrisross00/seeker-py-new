@@ -92,6 +92,7 @@ def reddit_search(search_params, reddit):
     # Run the search
     db_q = OutQuery()
     sts = search_params.search_terms.split(',')
+    print(f'reddit_search, STS = {sts}')
 
     subreddit = reddit.subreddit(search_params.subdomain)
 

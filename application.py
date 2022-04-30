@@ -11,6 +11,7 @@ BLUEPRINTS = [outQuery, message, search ,searchResultDb, searchParameters]
 
 def create_app():
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = os.environ.get('CSRF_SECRET_KEY', None)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', None)
     app.config['SQL_ALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQL_ALCHEMY_TRACK_MODIFICATIONS', None)
 

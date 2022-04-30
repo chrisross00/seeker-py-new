@@ -4,11 +4,9 @@
 import utils
 from models.SearchModel import clean_up_db, reddit_search
 from models.MessageModel import Twilio
-from models.SearchParameters import add_parameters, get_parameters
 
-def runmain():    
+def runmain(search_params):    
     reddit = utils.get_auth_instance()
-    search_params = add_parameters() #get stuff from the UI and pass it to the DB - if you've seen it, use the search param from before: if not store it and use the new one
     reddit_search(search_params, reddit)
 
     # Twilio stuff
@@ -22,9 +20,18 @@ def clean():
     clean_up_db()
     return
 
-def test():
-    most_recent_parameters = get_parameters()
-    print(f'most_recent_parameters {most_recent_parameters}')
+def send_test_text():
+    # Test sending messages
+    twilio = Twilio()
+    twilio.message.insert_test_messsage()
+    twilio.message.build_message()
+    twilio.message.send_message()
+    
+    return
+
+def tests():
+    # most_recent_parameters = get_parameters()
+    # print(f'most_recent_parameters {most_recent_parameters}')
     
     # show the parameters on the page
     # let the user change them
@@ -45,11 +52,4 @@ def test():
 
     # search_result = reddit_search(search_queries, subreddit, limit)
 
-    # Test sending messages
-    # twilio = Twilio()
-    # twilio.message.insert_test_messsage()
-    # twilio.message.build_message()
-    # twilio.message.send_message()
-    
     return
-

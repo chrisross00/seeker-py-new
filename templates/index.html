@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <br/>
+    <h1>Welcome to SMS Seeker</h1>
+    <p>This website will search a given site on a specified interval </p>
+    <br/>
+    <h2>Search Parameters</h2>
+    <p>Below are the search parameters currently being used the automated search. Modify and Submit to update the automated search.</p>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <br/>
+        {{ form.site.label(class="form-label") }}
+        {{ form.site(class="form-control") }}
+        <br/>
+
+        {{ form.subdomain.label(class="form-label") }}
+        {{ form.subdomain(class="form-control") }}
+        <br/>
+
+        {{ form.search_terms.label(class="form-label") }}
+        {{ form.search_terms(class="form-control") }}
+        <br/>
+
+        {{ form.limit.label(class="form-label") }}
+        {{ form.limit(class="form-control") }}
+        <br/>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+<br/><br/>
+{% endblock %}

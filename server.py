@@ -1,7 +1,9 @@
 import os
-from runmain import runmain, clean_up_db, test
+from forms.SearchForm import SearchForm
+from models.SearchParameters import get_parameters, add_parameters
+from runmain import runmain, clean_up_db, send_test_text
 from application import create_app
-from flask import request
+from flask import request, render_template
 from flask_ngrok import run_with_ngrok
 from twilio.twiml.messaging_response import MessagingResponse
 from models.MessageModel import handle_incoming_message
@@ -19,24 +21,64 @@ else:
 app = create_app()
 
 # Create a route that just returns "In progress"
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def serve_homepage():
-    return "This is a home page!"
+    form = SearchForm()
+    search_parameters = get_parameters()
+    if request.method == 'GET':
+        form.site.data = search_parameters.site
+        form.subdomain.data = search_parameters.subdomain
+        form.search_terms.data = search_parameters.search_terms
+        form.limit.data = search_parameters.limit
+        form.submit.label.text = 'Update'
+    
+    if form.validate_on_submit() and request.method == 'POST':
+        print(f'SUBMIT {(form.search_terms)}')
+        site = form.site.data
+        subdomain = form.subdomain.data
+        search_terms = form.search_terms.data
+        limit = form.limit.data
+        add_parameters(site, subdomain, search_terms, limit)
+        
+    return render_template('index.html',
+        form=form,
+        search_parameters=search_parameters
+    )
 
-@app.route("/runmain") #will loop the app.py script while on thie page
+@app.route("/manual-search", methods=['GET', 'POST']) #will loop the app.py script while on thie page
 def run_main():
-    runmain()
-    return "Testing Reddit to Twilio connection!"
+    form = SearchForm()
+    search_parameters = get_parameters()
+    if request.method == 'GET':
+        form.site.data = search_parameters.site
+        form.subdomain.data = search_parameters.subdomain
+        form.search_terms.data = search_parameters.search_terms
+        form.limit.data = search_parameters.limit
+    
+    if form.validate_on_submit() and request.method == 'POST':
+        print(f'SUBMIT {(form.search_terms)}')
+        site = form.site.data
+        subdomain = form.subdomain.data
+        search_terms = form.search_terms.data
+        limit = form.limit.data
+        search_params = add_parameters(site, subdomain, search_terms, limit)
+        runmain(search_params)
+        
+    return render_template('manualsearch.html',
+        form=form,
+        search_parameters=search_parameters
+    )
 
-@app.route("/test")
-def run_test():
-    test()
-    return "Test script!"
+
+@app.route("/testtext")
+def test_text():
+    send_test_text()
+    return render_template('testtext.html')
 
 @app.route("/clean") #will loop the app.py script while on thie page
 def clean():
     clean_up_db()
-    return "Cleaning the database!"
+    return render_template('clean.html')
 
 @app.route("/sms", methods=['POST'])
 def handle_incoming_msg():
@@ -54,6 +96,15 @@ def handle_incoming_msg():
     
     print(final_body) #somewhere in here, need to save the inbound-message?
     return str(resp)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template("500.html"), 500
+
 
 # Start the web server when this file runs
 # also run ngrok http 5000

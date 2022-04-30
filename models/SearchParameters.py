@@ -19,16 +19,14 @@ class SearchParameters(db.Model):
     def __repr__(self):
         return '<id %r>' % self.id
 
-def test_add_parameters(): # in future, pass params in instead
-        
-    search_str = "epoch, oliviaa, yugo" #PASS-IN PARAMETER
-    search_str = search_str.replace(" ", "")
-
+def add_parameters(site, subdomain, search_terms, limit=1): # PASS UI PARAMETERS HERE     
+    print(f'received search_terms, {search_terms}')
     # check if unique first
     params = SearchParameters( #PASS-IN PARAMETER
-        site= 'reddit',
-        subdomain= 'mechmarket',
-        search_terms= search_str
+        site= site,
+        subdomain= subdomain,
+        search_terms= search_terms,
+        limit=limit
     )
     hashed_params = search_result_hash(params)
     print(f'hashed_params {hashed_params}')
@@ -36,33 +34,10 @@ def test_add_parameters(): # in future, pass params in instead
     print(f'previous_search_params, {previous_search_params}')
 
     if previous_search_params:
-        print(f'found this search param already')
+        print(f'found this search param already')        
         return previous_search_params
     else:
-        params.hashed_search = hashed_params
-        db.session.add(params)
-        db.session.commit()
-        return params
-
-def add_parameters(): # PASS UI PARAMETERS HERE     
-    search_str = "epoch, olivia, yugo" #PASS-IN PARAMETER
-    search_str = search_str.replace(" ", "")
-
-    # check if unique first
-    params = SearchParameters( #PASS-IN PARAMETER
-        site= 'reddit',
-        subdomain= 'mechmarket',
-        search_terms= search_str
-    )
-    hashed_params = search_result_hash(params)
-    print(f'hashed_params {hashed_params}')
-    previous_search_params = SearchParameters.query.filter_by(hashed_search=hashed_params).first()
-    print(f'previous_search_params, {previous_search_params}')
-
-    if previous_search_params:
-        print(f'found this search param already')
-        return previous_search_params
-    else:
+        print(f'NEW SEARCH PARAMS!')
         params.hashed_search = hashed_params
         db.session.add(params)
         db.session.commit()
@@ -70,10 +45,11 @@ def add_parameters(): # PASS UI PARAMETERS HERE
 
 def get_parameters():
     most_recent_parameters = SearchParameters.query.order_by(desc(SearchParameters.id)).first()
+    # print(f'most_recent_parameters {most_recent_parameters}')
     return most_recent_parameters
 
 def search_result_hash(params):
-    to_hash = str(params.site) + str(params.subdomain) + str(params.search_terms)
+    to_hash = str(params.site) + str(params.subdomain) + str(params.search_terms) + str(params.limit)
     hash_object = hashlib.sha256(to_hash.encode('utf-8')) #
     hex_dig = hash_object.hexdigest() # if SearchParameters.query.filter_by(hash=hex_dig)...
     return hex_dig
