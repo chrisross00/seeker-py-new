@@ -3,7 +3,6 @@
 # ======================
 
 .env
-roadmap.md
 /playground/
 /models/searches.db
 /migrations/
