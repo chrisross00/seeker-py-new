@@ -36,9 +36,9 @@ def add_parameters(site, subdomain, search_terms, limit=1): # PASS UI PARAMETERS
 
     if previous_search_params:
         print(f'found this search param already')
-        # previous_search_params.modified_date = datetime.utcnow
-        # db.session.add(params)
-        # db.session.commit()
+        previous_search_params.modified_date = datetime.utcnow()
+        db.session.add(previous_search_params)
+        db.session.commit()
         return previous_search_params
     else:
         print(f'NEW SEARCH PARAMS!')
@@ -48,7 +48,7 @@ def add_parameters(site, subdomain, search_terms, limit=1): # PASS UI PARAMETERS
         return params
 
 def get_parameters():
-    most_recent_parameters = SearchParameters.query.order_by(desc(SearchParameters.id)).first()
+    most_recent_parameters = SearchParameters.query.order_by(desc(SearchParameters.modified_date)).first()
     # print(f'most_recent_parameters {most_recent_parameters}')
     return most_recent_parameters
 
