@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import backref
-from models.SearchParameters import SearchParameters
+from models.SearchParameters import get_parameters
 from models.base import db
 
 # ==================================================================
@@ -87,12 +87,15 @@ class SearchResult:
         
         return None
         
-def reddit_search(search_params, reddit):
+def reddit_search(reddit):
+
+    search_params = get_parameters()    
+    if search_params is None:
+        return
 
     # Run the search
     db_q = OutQuery()
     sts = search_params.search_terms.split(',')
-    print(f'reddit_search, STS = {sts}')
 
     subreddit = reddit.subreddit(search_params.subdomain)
 
