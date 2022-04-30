@@ -1,6 +1,8 @@
 # Roadmap
 
 ## Priority
+  * On/off switch for bots
+  * Add whitespace for FE, remove for BE
   * Don't send SMS until morning
   * Blueprints might be used wrong... need to investigate. Could clone the whole thing and then start trying to set up the db without any blueprint stuff
     * Either way, blueprints is the key to setting up separate route handlers
@@ -38,29 +40,14 @@ https://www.youtube.com/watch?v=SiCAIRc0pEI
 
 * Pushing to Heroku
   * git push heroku master
-  * 
+  * If you updated the db
+    * after building: Heroku run python
+    * from server import app
+    * from application import db
+    * db.create_all()
+    * exit()
 
 ## Backlog
-* Added FE to update queries! 
-  * Need to show query parameters in the front end, and give user a way to update them
-    * Store and save the query parameters, then show on the page
-    * When the user changes them, update them
-      * **Test: can change configuration and save (job and/or parameter) and the job running picks it up**
-
-* Google OAuth: Need auth - otherwise anyone can just pop in and possibly get my reddit creds/twilio creds
-* Added INSERT DATE to 
-  * Message table
-* Added Last_Used_Date to
-  * SearchParameters
-
-* **Deployed to Heroku!!! It's Live!!!**
-  * 4/28 - deployed to heroku, everything builds. But need, in order to actually have a usable app: :white_check_mark:
-    * Figure out the environment variable thing because there is no .env file in prod. 
-      * Working on test in runmain :white_check_mark:
-      * All ngrok and get_auth_config stuff needs to be redone :white_check_mark:
-      * SQL_ALCHEMY stuff on application.py :white_check_mark:
-      * Make production env vars :white_check_mark:
-    * SSL - Upgraded to hobby version for $7 per month 
 
 * **Come up with better SMS handling**
   * Could design a whole text/command interpretation system
@@ -119,7 +106,17 @@ https://www.youtube.com/watch?v=SiCAIRc0pEI
 
 
 ## Done!
+* Added FE to update queries! 
+  * Need to show query parameters in the front end, and give user a way to update them
+    * Store and save the query parameters, then show on the page
+    * When the user changes them, update them
+      * **Test: can change configuration and save (job and/or parameter) and the job running picks it up**
 
+* Google OAuth: Need auth - otherwise anyone can just pop in and possibly get my reddit creds/twilio creds
+* Added INSERT DATE to 
+  * Message table
+* Added Last_Used_Date to
+  * SearchParameters
 * Search flow:
     * on main page, see a table with the most recently used search
     * pull from config database and get the most recently used search :white-check-mark:
@@ -127,6 +124,16 @@ https://www.youtube.com/watch?v=SiCAIRc0pEI
     * search :white-check-mark:
     * evaluate if search is different, if so store it :white-check-mark:
     * pick from a list of previously used searches :white-check-mark:
+
+
+* **Deployed to Heroku!!! It's Live!!!**
+  * 4/28 - deployed to heroku, everything builds. But need, in order to actually have a usable app: :white_check_mark:
+    * Figure out the environment variable thing because there is no .env file in prod. 
+      * Working on test in runmain :white_check_mark:
+      * All ngrok and get_auth_config stuff needs to be redone :white_check_mark:
+      * SQL_ALCHEMY stuff on application.py :white_check_mark:
+      * Make production env vars :white_check_mark:
+    * SSL - Upgraded to hobby version for $7 per month 
 
 * Make the twilio thing look at the queue and send anything that has a 0 status
 
