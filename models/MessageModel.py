@@ -2,7 +2,7 @@ import os
 import requests
 import time
 import calendar
-import datetime
+from datetime import datetime
 from models.base import db
 from twilio.rest import Client
 
@@ -22,6 +22,7 @@ class Message(db.Model):
     url = db.Column(db.String(200), nullable=False)
     result_id = db.Column(db.String, nullable=False)
     user_replied = db.Column(db.Integer, nullable=True)
+    insert_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Create a string
     def __repr__(self):
@@ -60,7 +61,7 @@ def add_result(result):
         return
     else:
         # do some date time math
-        d = datetime.datetime.utcnow()
+        d = datetime.utcnow()
         utc_time = calendar.timegm(d.utctimetuple())
 
         datediff_obj = utc_time - result.post_date_utc

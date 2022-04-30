@@ -12,6 +12,7 @@ class SearchParameters(db.Model):
     search_terms = db.Column(db.String(200), nullable=False)
     limit = db.Column(db.Integer, default=1)
     insert_date = db.Column(db.DateTime, default=datetime.utcnow)
+    modified_date = db.Column(db.DateTime, default=datetime.utcnow)
     searches = db.relationship('Search', backref=backref('searchparameters'))
     hashed_search = db.Column(db.String(200), nullable=False)
 
@@ -34,7 +35,10 @@ def add_parameters(site, subdomain, search_terms, limit=1): # PASS UI PARAMETERS
     print(f'previous_search_params, {previous_search_params}')
 
     if previous_search_params:
-        print(f'found this search param already')        
+        print(f'found this search param already')
+        # previous_search_params.modified_date = datetime.utcnow
+        # db.session.add(params)
+        # db.session.commit()
         return previous_search_params
     else:
         print(f'NEW SEARCH PARAMS!')
