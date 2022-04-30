@@ -19,7 +19,7 @@ def create_app():
     scheduler.api_enabled = True
     scheduler.init_app(app)
     scheduler.start()
-    scheduler.add_job(id='job_1', func=runmain, args='', trigger='interval',seconds=20)
+    scheduler.add_job(id='job_1', func=runmain, args='', trigger='interval',minutes=2)
         
     db.init_app(app)
     db.app = app
