@@ -5,15 +5,16 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      {% if dict(session).get('profile', None) %}
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{{ url_for('serve_homepage') }}">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Results</a>
+            <a class="nav-link disabled" href="#">Results</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Test Scripts
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -23,7 +24,17 @@
               <li><a class="dropdown-item" href="{{ url_for('run_main') }}">Manual search</a></li>
             </ul>
           </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{{ url_for('logout') }}">Logout</a>
+          </li>
         </ul>
+      {% else %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{{ url_for('login') }}">Login</a>
+          </li>
+        </ul>
+      {% endif %}
       </div>
     </div>
   </nav>
