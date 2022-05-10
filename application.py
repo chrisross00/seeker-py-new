@@ -20,6 +20,7 @@ def create_app():
     scheduler.init_app(app)
     scheduler.start()
     scheduler.add_job(id='job_1', func=runmain, args='', trigger='interval',minutes=2)
+    print('starting job_1...')
         
     db.init_app(app)
     db.app = app
